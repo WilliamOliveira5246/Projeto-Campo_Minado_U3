@@ -13,6 +13,8 @@
     // board[0][6] = 15; //bomba
     // board[0][7] = 42;
 
+char FBOMB = '*', FNOTREV = '#', FNULL = ' ';
+
 typedef struct {
     char face[3];
     int status;
@@ -21,26 +23,49 @@ typedef struct {
 
 void setBombs(int row, int col, int qtdBombs, houses * pt_board){
     for (int b = 0; b<qtdBombs; b++){
-        //int slot = rand() % row*col;
-        int slot = b;
-        if (pt_board[slot].face[1] != 15){
-            pt_board[slot].face[1] = 15;
+        int slot = rand() % (row*col);
+        if (pt_board[slot].face[1] != FBOMB){
+            pt_board[slot].face[1] = FBOMB;
         }
         else b--;
     }         
 }
 
+void setNumbers(int row, int col, houses * pt_board){
+     for(int i=0; i<row; i++){
+        for(int j=0; j<col; j++){
+            if(pt_board[i*col+j].face[1] != FBOMB){
+                int k = 0;
+                for(int z = -1; z < 2;z++){
+                    for(int x = -1; x < 2;x++){
+                        if((i-z) <= row && (i-z) >= 0 && (j-x) <= col && (j-x)  >= 0){
+                            if(pt_board[(i-z)*col+(j-x)].face[1] == FBOMB){
+                                k++;
+                            }
+                        }
+                    }
+                }
+                if(k > 0){
+                    pt_board[i*col+j].face[1] = k + '0';
+                }
+                else{
+                    pt_board[i*col+j].face[1] = FNULL;
+                }
+            }
+        }
+     }
+}
 
 houses* init_board(int row, int col, int qtdBombs){
     houses * board = (houses*) malloc(row*col*sizeof(houses));
     for(int i = 0; i < row;i++){
         for(int j = 0; j < col;j++){
-            board[i*col+j].face[0] = '#';
-            board[i*col+j].face[1] = '#';//
+            board[i*col+j].face[0] = FNOTREV;
             board[i*col+j].status = 0;
         }
     }
     setBombs(row,col,qtdBombs,board);
+    setNumbers(row,col,board);
     return board;
 }
 
@@ -54,6 +79,13 @@ houses* init_board(int row, int col, int qtdBombs){
      }
  }
 
+//   void reveal(int row, int col, int colT,houses * pt_board){
+//       pt_board[row*colT+col].status = 1;
+//       if(pt_board[row*colT+col].face != FBOMB){
+//           if(pt_board[row*colT+col].face == FBOMB)
+//       }
+//   }
+
 
 int main(){
 
@@ -64,7 +96,7 @@ int main(){
     int fim = 0;
     
     houses * board = NULL;
-    //srand((unsigned int)time(NULL));
+    srand((unsigned int)time(NULL));
     
     board = init_board(row,col,qtdBombs);
     print_board(row, col, board);
