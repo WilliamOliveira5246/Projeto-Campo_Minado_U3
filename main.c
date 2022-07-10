@@ -2,9 +2,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#include <constantes.h>
-#include <estruturas.h>
-#include <funcoes.h>
+#include "constantes.h"
+#include "estruturas.h"
+#include "funcoes.h"
 
 
 //     //1 - 8

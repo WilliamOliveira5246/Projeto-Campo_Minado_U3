@@ -1,3 +1,12 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+#include "constantes.h"
+#include "estruturas.h"
+#include "funcoes.h"
+
+
 void setBombs(int row, int col, int qtdBombs, houses * pt_board){
     for (int b = 0; b<qtdBombs; b++){
         int slot = rand() % (row*col);
