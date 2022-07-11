@@ -95,7 +95,7 @@
                 if(pt_board[indexR*COL+indexC].face[1] == FNULL){
                     for(int i = -1; i < 2;i++){
                         for(int j = -1; j < 2;j++){
-                            if((indexR - i) <= ROW && (indexR - i) >= 0 && (indexC - j) <= COL && (indexC - j)  >= 0){
+                            if((indexR - i) < ROW && (indexR - i) >= 0 && (indexC - j) < COL && (indexC - j)  >= 0 &&  pt_board[(indexR - i)*COL+(indexC - j)].status == 0){
                             printf("\nChegou num ponto seguro\n");
                             reveal(ROW,COL,(indexR-i),(indexC-j),pt_board,inGame);
                             }
