@@ -9,7 +9,8 @@ void setNumbers(int row, int col, houses * pt_board);
 
 houses* init_board(int row, int col, int qtdBombs);
 
- void print_board(int row, int col, houses * board);
+void print_board(int row, int col, houses * board);
 
+int reveal(int ROW, int COL, int indexR, int indexC ,houses * pt_board, int inGame);
 
 #endif

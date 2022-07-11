@@ -7,67 +7,87 @@
 #include "funcoes.h"
 
 
-void setBombs(int row, int col, int qtdBombs, houses * pt_board){
-    for (int b = 0; b<qtdBombs; b++){
-        int slot = rand() % (row*col);
-        if (pt_board[slot].face[1] != FBOMB){
-            pt_board[slot].face[1] = FBOMB;
-        }
-        else b--;
-    }         
-}
+  void setBombs(int ROW, int COL, int QTDBOMBS, houses * pt_board){
+      for (int b = 0; b < QTDBOMBS; b++){
+          int slot = rand() % (ROW*COL);
+          if (pt_board[slot].face[1] != FBOMB){
+              pt_board[slot].face[1] = FBOMB;
+          }
+          else b--;
+      }         
+  }
 
-void setNumbers(int row, int col, houses * pt_board){
-     for(int i=0; i<row; i++){
-        for(int j=0; j<col; j++){
-            if(pt_board[i*col+j].face[1] != FBOMB){
-                int k = 0;
-                for(int z = -1; z < 2;z++){
-                    for(int x = -1; x < 2;x++){
-                        if((i-z) <= row && (i-z) >= 0 && (j-x) <= col && (j-x)  >= 0){
-                            if(pt_board[(i-z)*col+(j-x)].face[1] == FBOMB){
-                                k++;
-                            }
-                        }
-                    }
-                }
-                if(k > 0){
-                    pt_board[i*col+j].face[1] = k + '0';
-                }
-                else{
-                    pt_board[i*col+j].face[1] = FNULL;
-                }
-            }
-        }
-     }
-}
+  void setNumbers(int ROW, int COL, houses * pt_board){
+      for(int i = 0; i < ROW; i++){
+          for(int j = 0; j < COL; j++){
+              if(pt_board[i*COL+j].face[1] != FBOMB){
+                  int count = 0;
+                  for(int x = -1; x < 2; x++){
+                      for(int y = -1; y < 2; y++){
+                          if((i-x) < ROW && (i-x) >= 0 && (j-y) < COL && (j-y)  >= 0){
+                              if(pt_board[(i-x)*COL+(j-y)].face[1] == FBOMB){
+                                  count++;
+                              }
+                          }
+                      }
+                  }
+                  if(count > 0){
+                      pt_board[i*COL+j].face[1] = count + '0';
+                  }
+                  else{
+                      pt_board[i*COL+j].face[1] = FNULL;
+                  }
+              }
+          }
+      }
+  }
+    
 
-houses* init_board(int row, int col, int qtdBombs){
-    houses * board = (houses*) malloc(row*col*sizeof(houses));
-    for(int i = 0; i < row;i++){
-        for(int j = 0; j < col;j++){
-            board[i*col+j].face[0] = FNOTREV;
-            board[i*col+j].status = 0;
-        }
-    }
-    setBombs(row,col,qtdBombs,board);
-    setNumbers(row,col,board);
-    return board;
-}
+  houses* init_board(int ROW, int COL, int QTDBOMBS){
+      houses * board = (houses*) malloc(ROW*COL*sizeof(houses));
+      for(int i = 0; i < ROW;i++){
+          for(int j = 0; j < COL;j++){
+              board[i*COL+j].face[0] = FNOTREV;
+              board[i*COL+j].status = 0;
+          }
+      }
+      setBombs(ROW,COL,QTDBOMBS,board);
+      setNumbers(ROW,COL,board);
+      return board;
+  }
 
 
- void print_board(int row, int col, houses * board){
-    for(int i=0; i<row; i++){
-        for(int j=0; j<col; j++){
-            printf("| %c ",board[i*col+j].face[1]);
-        }
-        printf("|\n");
-     }
- }
+  void print_board(int ROW, int COL, houses * board){
+      printf("\n");
+      for(int i=0; i<ROW; i++){
+          for(int j=0; j<COL; j++){
+              printf("| %c ",board[i*COL+j].face[board[i*COL+j].status]);
+          }
+          printf("|\n");
+      }
+      printf("\n");
+  }
 
-//   void reveal(int row, int col, int colT,houses * pt_board){
-//       pt_board[row*colT+col].status = 1;
-//       if(pt_board[row*colT+col].face != FBOMB){
-//           if(pt_board[row*colT+col].face == FBOMB)
-//       }
-//   }
+  int reveal(int ROW, int COL, int indexR, int indexC ,houses * pt_board, int inGame){
+      if(inGame){
+          int pos = indexR*COL+indexC;
+          pt_board[pos].status = 1;
+          if(pt_board[pos].face[1] != FBOMB){
+              if(pt_board[pos].face[1] == FNULL){
+                  for(int i = -1; i < 2;i++){
+                      for(int j = -1; j < 2;j++){
+                          int rNew = indexR - i, cNew = indexC - j;
+                          if((rNew) < ROW && (rNew) >= 0 && (cNew) < COL && (cNew)  >= 0 &&  pt_board[(rNew)*COL+(cNew)].status == 0){
+                              reveal(ROW,COL,(rNew),(cNew),pt_board,inGame);
+                          }
+                      }
+                  }
+              }
+          }
+          else{
+              inGame = 0;
+              printf("GAME OVER!\n");
+          }
+      }
+      return inGame;
+  }
