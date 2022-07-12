@@ -2,9 +2,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#include "constantes.h"
-#include "estruturas.h"
-#include "funcoes.h"
+#include "constantes/constantes.h"
+#include "estruturas/estruturas.h"
+#include "funcoes/funcoes.h"
 
 
 //        1 - 8
@@ -114,24 +114,7 @@
 
 
 int main(){
-    
-    houses * board = NULL;
-    srand((unsigned int)time(NULL));
-    
-    board = init_board(ROW,COL,QTDBOMBS);
-    print_board(ROW, COL, board);
-    int inGame = 1, r, c;
-    while(inGame){
-        scanf("%d %d",&r,&c);
-        if(r < ROW && r >= 0 && c < COL && c >= 0 ){
-            inGame = reveal(ROW,COL,r,c,board,inGame);
-            print_board(ROW, COL, board);
-        }
-        else{
-            printf("Insira uma Coordenada Válida!\n");
-        }
-    }
-    
+    houses * board = gameInit(board);
     free(board);
     return 0;
 }
