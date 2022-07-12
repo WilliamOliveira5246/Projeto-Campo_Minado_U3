@@ -13,6 +13,6 @@ void print_board(int row, int col, houses * board);
 
 int reveal(int ROW, int COL, int indexR, int indexC ,houses * pt_board, int inGame);
 
-houses * gameInit(houses * pt_board);
+houses * init_game(houses * pt_board);
 
 #endif

@@ -114,7 +114,7 @@
 
 
 int main(){
-    houses * board = gameInit(board);
+    houses * board = init_game(board);
     free(board);
     return 0;
 }

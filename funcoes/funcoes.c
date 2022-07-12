@@ -59,11 +59,29 @@ houses* init_board(int ROW, int COL, int QTDBOMBS){
 
 void print_board(int ROW, int COL, houses * board){
     printf("\n");
-    for(int i=0; i<ROW; i++){
-        for(int j=0; j<COL; j++){
-            printf("| %c ",board[i*COL+j].face[board[i*COL+j].status]);
+    for(int i=-1; i<ROW; i++){
+        if (i==-1) {
+            for(int k=0; k<COL; k++){
+                if (k==0){
+                    printf("  %4d",k+1);
+                }
+                else {
+                    printf("%4d",k+1);
+                }
+            }
+            printf("\n");
         }
-        printf("|\n");
+        else{
+            for(int j=0; j<COL; j++){
+                if(j==0){
+                    printf("%2d | %c ",i+1,board[i*COL+j].face[board[i*COL+j].status]);
+                }
+                else {
+                    printf("| %c ",board[i*COL+j].face[board[i*COL+j].status]);
+                }
+            }
+            printf("|\n");
+        }
     }
     printf("\n");
 }
@@ -92,10 +110,10 @@ int reveal(int ROW, int COL, int indexR, int indexC ,houses * pt_board, int inGa
     return inGame;
 }
 
-houses * gameInit(houses * pt_board){
+houses * init_game(houses * pt_board){
     srand((unsigned int)time(NULL));
     pt_board = init_board(ROW,COL,QTDBOMBS);
-    printf("Insira uma coodenada abaixo de de x = [1,%d] e y [1,%d]",ROW,COL);
+    printf("Insira uma coodenada abaixo de de x = [1,%d] e y = [1,%d]",ROW,COL);
     print_board(ROW, COL, pt_board);
     int inGame = 1, r, c;
     while(inGame){
