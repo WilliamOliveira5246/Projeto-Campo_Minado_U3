@@ -87,10 +87,11 @@ void print_board(int ROW, int COL, houses * board){
 }
 
 int reveal(int ROW, int COL, int indexR, int indexC ,houses * pt_board, int inGame){
-    if(inGame){
+    if(inGame >= 0 && inGame < ((ROW*COL) - QTDBOMBS)){
         int pos = indexR*COL+indexC;
         pt_board[pos].status = 1;
         if(pt_board[pos].face[1] != FBOMB){
+            inGame++;
             if(pt_board[pos].face[1] == FNULL){
                 for(int i = -1; i < 2;i++){
                     for(int j = -1; j < 2;j++){
@@ -103,8 +104,7 @@ int reveal(int ROW, int COL, int indexR, int indexC ,houses * pt_board, int inGa
             }
         }
         else{
-            inGame = 0;
-            printf("\nGAME OVER!");
+            inGame = -1;
         }
     }
     return inGame;
@@ -115,13 +115,19 @@ houses * init_game(houses * pt_board){
     pt_board = init_board(ROW,COL,QTDBOMBS);
     printf("Insira uma coodenada abaixo de de x = [1,%d] e y = [1,%d]",ROW,COL);
     print_board(ROW, COL, pt_board);
-    int inGame = 1, r, c;
-    while(inGame){
+    int inGame = 0, r, c;
+    while(inGame >= 0 && inGame != SEGUROS){
         scanf("%d %d",&r,&c);
         r--;
         c--;
-        if(r < ROW && r >= 0 && c < COL && c >= 0 ){
+        if(r < ROW && r >= 0 && c < COL && c >= 0){
             inGame = reveal(ROW,COL,r,c,pt_board,inGame);
+            if(inGame == -1){
+                printf("\nGAME OVER!");
+            }
+            else if(inGame == SEGUROS){
+                printf("\nParabéns, Você Ganhou!");
+            }
             print_board(ROW, COL, pt_board);
         }
         else{
@@ -130,3 +136,26 @@ houses * init_game(houses * pt_board){
     }
     return pt_board;
 }
+
+// void init_menu(){
+//     menu i;
+//     printf("Campo Minado\n\n");
+//     printf("Iniciar Novo Jogo - 0\n");
+//     printf("Carregar Jogo")
+//     switch(i){
+//         case START : 
+//             houses * board = init_game(board);
+//             free(board);
+//             break;
+//         case SAVE :
+//             break;
+//         case LOAD :
+//             break;
+//         case EXIT :
+//             break;
+//         default :
+//             printf("Insira um Número Valido");
+
+//     }
+    
+// }

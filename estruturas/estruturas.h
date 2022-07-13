@@ -6,4 +6,11 @@ typedef struct {
      int status;
  }houses;
 
+typedef enum{
+    START,
+    SAVE,
+    LOAD,
+    EXIT
+}menu;
+
 #endif
