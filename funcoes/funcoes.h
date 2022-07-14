@@ -3,16 +3,21 @@
 
 // Definição de tipos e estrturas devem estar num arquivo .h
 
-void setBombs(int row, int col, int qtdBombs, houses * pt_board);
+void clear_screen();
 
-void setNumbers(int row, int col, houses * pt_board);
+void setBombs(int ROW, int COL, int QTDBOMBS, houses * pt_board);
 
-houses* init_board(int row, int col, int qtdBombs);
+void setNumbers(int ROW, int COL, houses * pt_board);
 
-void print_board(int row, int col, houses * board);
+houses * init_board(int ROW, int COL, int QTDBOMBS, houses * board);
+
+void print_board(int ROW, int COL, houses * board);
 
 int reveal(int ROW, int COL, int indexR, int indexC ,houses * pt_board, int inGame);
 
 houses * init_game(houses * pt_board);
+
+void init_menu();
+
 
 #endif

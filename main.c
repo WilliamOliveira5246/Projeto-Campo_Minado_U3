@@ -8,6 +8,7 @@
 
 
 int main(){
-    init_menu();
+    houses * board = NULL;
+    init_menu(board);
     return 0;
 }

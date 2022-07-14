@@ -2,4 +2,4 @@
 
 const char FBOMB = '*', FNOTREV = '#', FNULL = ' ';
 
-const int ROW = 10, COL = 20, QTDBOMBS = 40 , SEGUROS = (ROW*COL) - QTDBOMBS;
+const int ROW = 10, COL = 20, QTDBOMBS = 40 , SEGUROS = 160;

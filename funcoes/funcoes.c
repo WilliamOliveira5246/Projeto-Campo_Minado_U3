@@ -7,6 +7,14 @@
 #include "funcoes.h"
 
 
+void clear_screen(){
+#ifdef WINDOWS
+    system("cls");
+#else
+    system("clear");
+#endif
+}
+
 void setBombs(int ROW, int COL, int QTDBOMBS, houses * pt_board){
     for (int b = 0; b < QTDBOMBS; b++){
         int slot = rand() % (ROW*COL);
@@ -43,8 +51,8 @@ void setNumbers(int ROW, int COL, houses * pt_board){
 }
 
 
-houses* init_board(int ROW, int COL, int QTDBOMBS){
-    houses * board = (houses*) malloc(ROW*COL*sizeof(houses));
+houses * init_board(int ROW, int COL, int QTDBOMBS, houses * board){
+    board = (houses*) malloc(ROW*COL*sizeof(houses));
     for(int i = 0; i < ROW;i++){
         for(int j = 0; j < COL;j++){
             board[i*COL+j].face[0] = FNOTREV;
@@ -111,9 +119,8 @@ int reveal(int ROW, int COL, int indexR, int indexC ,houses * pt_board, int inGa
 }
 
 houses * init_game(houses * pt_board){
-    srand((unsigned int)time(NULL));
-    pt_board = init_board(ROW,COL,QTDBOMBS);
-    printf("Insira uma coodenada abaixo de de x = [1,%d] e y = [1,%d]",ROW,COL);
+    srand((unsigned int)time(NULL));  
+    printf("\nInsira uma coodenada abaixo de de x = [1,%d] e y = [1,%d]\nDigite Coordenadas \"-1 -1\" pra voltar ao menu",ROW,COL);
     print_board(ROW, COL, pt_board);
     int inGame = 0, r, c;
     while(inGame >= 0 && inGame != SEGUROS){
@@ -130,32 +137,50 @@ houses * init_game(houses * pt_board){
             }
             print_board(ROW, COL, pt_board);
         }
+        else if((r == -2) && (c == -2)){
+            printf("\nDeseja Retornar ao Menu?\n0 - Sim\n1 - Não\n\n");
+            int i;
+            scanf("%d",&i);
+            if(!i){
+                init_menu(pt_board);
+            }
+            else{
+                printf("\nInsira uma coodenada abaixo de de x = [1,%d] e y = [1,%d]\nDigite Coordenadas \"-1 -1\" pra voltar ao menu\n\n",ROW,COL);
+
+            }
+        }
         else{
-            printf("Insira uma Coordenada Válida!\n");
+            printf("\nInsira uma Coordenada Válida\n");
         }
     }
     return pt_board;
 }
 
-// void init_menu(){
-//     menu i;
-//     printf("Campo Minado\n\n");
-//     printf("Iniciar Novo Jogo - 0\n");
-//     printf("Carregar Jogo")
-//     switch(i){
-//         case START : 
-//             houses * board = init_game(board);
-//             free(board);
-//             break;
-//         case SAVE :
-//             break;
-//         case LOAD :
-//             break;
-//         case EXIT :
-//             break;
-//         default :
-//             printf("Insira um Número Valido");
+ void init_menu(houses * board){   
+     menu i = -1;
+     int bufferI;
+     clear_screen();
+     printf("Campo Minado\n\n");
+     printf("Iniciar Novo Jogo - 0\n");
+     printf("Salvar Jogo - 1\n");
+     printf("Carregar Jogo - 2\n");
+     printf("Sair - 3\n\n");
+     scanf("%d",&bufferI);
+     i = bufferI;
+     switch(i){
+         case START : 
+             board = init_board(ROW,COL,QTDBOMBS,board);
+             board = init_game(board);
+             break;
+         case SAVE :
+             break;
+         case LOAD :
+             break;
+         case EXIT :
+             break;
+         default :
+             printf("Insira um Número Valido");
 
-//     }
+     }
     
-// }
+ }
