@@ -15,9 +15,9 @@ void print_board(int ROW, int COL, houses * board);
 
 int reveal(int ROW, int COL, int indexR, int indexC ,houses * pt_board, int inGame);
 
-houses * init_game(houses * pt_board);
+houses * init_game(houses * pt_boar, FILE * save);
 
-void init_menu();
+void init_menu(houses * board,FILE * save,int avaliableL,int avaliableS);
 
 
 #endif

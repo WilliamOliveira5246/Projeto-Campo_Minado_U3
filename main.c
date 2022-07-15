@@ -8,7 +8,9 @@
 
 
 int main(){
+    FILE * save;
     houses * board = NULL;
-    init_menu(board);
+    clear_screen();
+    init_menu(board, save,0,0);
     return 0;
 }

@@ -8,7 +8,7 @@
 
 
 void clear_screen(){
-#ifdef WINDOWS
+#ifdef _WIN32
     system("cls");
 #else
     system("clear");
@@ -118,9 +118,10 @@ int reveal(int ROW, int COL, int indexR, int indexC ,houses * pt_board, int inGa
     return inGame;
 }
 
-houses * init_game(houses * pt_board){
+houses * init_game(houses * pt_board, FILE * save){
     srand((unsigned int)time(NULL));  
-    printf("\nInsira uma coodenada abaixo de de x = [1,%d] e y = [1,%d]\nDigite Coordenadas \"-1 -1\" pra voltar ao menu",ROW,COL);
+    clear_screen();
+    printf("Insira uma coodenada abaixo de de x = [1,%d] e y = [1,%d]\nDigite Coordenadas \"-1 -1\" pra voltar ao menu\n",ROW,COL);
     print_board(ROW, COL, pt_board);
     int inGame = 0, r, c;
     while(inGame >= 0 && inGame != SEGUROS){
@@ -129,12 +130,16 @@ houses * init_game(houses * pt_board){
         c--;
         if(r < ROW && r >= 0 && c < COL && c >= 0){
             inGame = reveal(ROW,COL,r,c,pt_board,inGame);
-            if(inGame == -1){
-                printf("\nGAME OVER!");
+            clear_screen();
+            if(inGame > 0){
+                printf("Insira uma coodenada abaixo de de x = [1,%d] e y = [1,%d]\nDigite Coordenadas \"-1 -1\" pra voltar ao menu\n",ROW,COL);
+            }
+            else if(inGame == -1){
+                printf("GAME OVER!\n");
             }
             else if(inGame == SEGUROS){
-                printf("\nParabéns, Você Ganhou!");
-            }
+                printf("Parabéns, Você Ganhou!\n");
+            }            
             print_board(ROW, COL, pt_board);
         }
         else if((r == -2) && (c == -2)){
@@ -142,7 +147,8 @@ houses * init_game(houses * pt_board){
             int i;
             scanf("%d",&i);
             if(!i){
-                init_menu(pt_board);
+                clear_screen();
+                init_menu(pt_board, save,1,1);
             }
             else{
                 printf("\nInsira uma coodenada abaixo de de x = [1,%d] e y = [1,%d]\nDigite Coordenadas \"-1 -1\" pra voltar ao menu\n\n",ROW,COL);
@@ -156,10 +162,9 @@ houses * init_game(houses * pt_board){
     return pt_board;
 }
 
- void init_menu(houses * board){   
+ void init_menu(houses * board, FILE * save,int avaliableL,int avaliableS){   
      menu i = -1;
      int bufferI;
-     clear_screen();
      printf("Campo Minado\n\n");
      printf("Iniciar Novo Jogo - 0\n");
      printf("Salvar Jogo - 1\n");
@@ -170,13 +175,30 @@ houses * init_game(houses * pt_board){
      switch(i){
          case START : 
              board = init_board(ROW,COL,QTDBOMBS,board);
-             board = init_game(board);
+             board = init_game(board, save);
              break;
          case SAVE :
+            if(avaliableS){
+
+            }
+            else{
+                clear_screen();
+                printf("Você Não pode Salvar o Jogo ainda!\n\n");
+                init_menu(board,save,0,0);
+            }
              break;
          case LOAD :
+            if(avaliableL){
+
+            }
+            else{
+                clear_screen();
+                printf("Você Não tem nenhum jogo iniado ainda!\n\n");
+                init_menu(board,save,0,0);
+            }
              break;
          case EXIT :
+             printf("\nVou sentir Saudade :(\n");
              break;
          default :
              printf("Insira um Número Valido");
