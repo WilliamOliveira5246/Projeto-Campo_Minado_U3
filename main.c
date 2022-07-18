@@ -10,6 +10,7 @@
 int main(){
     FILE * save;
     houses * board = NULL;
+    srand(time(NULL));
     clear_screen();
     init_menu(board, save,0,0);
     return 0;
