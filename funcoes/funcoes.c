@@ -151,7 +151,7 @@ void help(int * r,int * c, houses * board){
             buffer = x*COL+y;
             if(board[buffer].status == 1 && board[buffer].face[1] != FNULL){
                 probA = calc_prob(x,y,board);
-                if(probA > probM){
+                if(probA > probM){                
                     pos = &board[buffer];
                     *r = x;
                     *c = y;
