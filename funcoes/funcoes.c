@@ -118,12 +118,56 @@ int reveal(int ROW, int COL, int indexR, int indexC ,houses * pt_board, int inGa
     return inGame;
 }
 
+int calc_prob(int r, int c, houses * board){
+    int total = 0, prob;
+    for(int i = -1; i < 2;i++){
+        for(int j = -1; j < 2;j++){
+            int rNew = r - i, cNew = c - j;
+            if((rNew) < ROW && (rNew) >= 0 && (cNew) < COL && (cNew)  >= 0 &&  board[(rNew)*COL+(cNew)].status == 0){
+                total++;
+            }
+        }
+    }
+    prob = 100 - (((board[r*COL+c].face[1] - '0')*10)/total);
+    return prob;
+}
+
+void help(int * r,int * c, houses * board){
+    int index = 0, rPos, cPos, buffer;
+    houses * pos;
+    for(int x = 0; x < ROW && index == 0;x++){
+        for(int y = 0; y < COL && index == 0;y++){
+            buffer = x*COL+y;
+            if(board[index].status == 1){
+                pos = &board[index];
+                rPos = x, cPos = y;
+                index = 1;                
+            }
+        }
+    }
+    int probM = calc_prob(rPos,cPos,board),probA;
+    for(int x = 0; x < ROW;x++){
+        for(int y = 0; y < COL;y++){
+            buffer = x*COL+y;
+            if(board[buffer].status == 1 && board[buffer].face[1] != FNULL){
+                probA = calc_prob(x,y,board);
+                if(probA > probM){
+                    pos = &board[buffer];
+                    *r = x;
+                    *c = y;
+                }
+            }        
+        }
+    }
+}
+
+
 houses * init_game(houses * pt_board, FILE * save){
     srand((unsigned int)time(NULL));  
     clear_screen();
-    printf("Insira uma coodenada abaixo de de x = [1,%d] e y = [1,%d]\nDigite Coordenadas \"-1 -1\" pra voltar ao menu\n",ROW,COL);
+    printf("Insira uma coodenada abaixo de de x = [1,%d] e y = [1,%d]\nDigite as Coordenadas \"-1 -1\" para voltar ao menu\nDigite as Coordenadas \"-2 -2\" para receber ajuda\n",ROW,COL);
     print_board(ROW, COL, pt_board);
-    int inGame = 0, r, c;
+    int inGame = 0, r, c, rHelp = -1, cHelp = -1;
     while(inGame >= 0 && inGame != SEGUROS){
         scanf("%d %d",&r,&c);
         r--;
@@ -132,7 +176,7 @@ houses * init_game(houses * pt_board, FILE * save){
             inGame = reveal(ROW,COL,r,c,pt_board,inGame);
             clear_screen();
             if(inGame > 0){
-                printf("Insira uma coodenada abaixo de de x = [1,%d] e y = [1,%d]\nDigite Coordenadas \"-1 -1\" pra voltar ao menu\n",ROW,COL);
+                printf("Insira uma coodenada abaixo de de x = [1,%d] e y = [1,%d]\nDigite as Coordenadas \"-1 -1\" para voltar ao menu\nDigite as Coordenadas \"-2 -2\" para receber ajuda\n",ROW,COL);
             }
             else if(inGame == -1){
                 printf("GAME OVER!\n");
@@ -141,6 +185,7 @@ houses * init_game(houses * pt_board, FILE * save){
                 printf("Parabéns, Você Ganhou!\n");
             }            
             print_board(ROW, COL, pt_board);
+            
         }
         else if((r == -2) && (c == -2)){
             printf("\nDeseja Retornar ao Menu?\n0 - Sim\n1 - Não\n\n");
@@ -150,10 +195,16 @@ houses * init_game(houses * pt_board, FILE * save){
                 clear_screen();
                 init_menu(pt_board, save,1,1);
             }
-            else{
-                printf("\nInsira uma coodenada abaixo de de x = [1,%d] e y = [1,%d]\nDigite Coordenadas \"-1 -1\" pra voltar ao menu\n\n",ROW,COL);
-
-            }
+        }
+        else if((r == -3) && (c == -3)){
+            help(&rHelp,&cHelp,pt_board);
+            clear_screen();
+            printf("Insira uma coodenada abaixo de de x = [1,%d] e y = [1,%d]\nDigite as Coordenadas \"-1 -1\" para voltar ao menu\nDigite as Coordenadas \"-2 -2\" para receber ajuda\n",ROW,COL);
+            print_board(ROW, COL, pt_board);
+            printf("Tente uma das Casas bloqueadas ao redor da casa nas Coordenadas x = \"%d\" e y = \"%d\"\n",rHelp,cHelp);
+            cHelp = -1; 
+            rHelp = -1;
+            
         }
         else{
             printf("\nInsira uma Coordenada Válida\n");
@@ -206,3 +257,5 @@ houses * init_game(houses * pt_board, FILE * save){
      }
     
  }
+
+
