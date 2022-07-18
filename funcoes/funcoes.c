@@ -15,6 +15,10 @@ void clear_screen(){
 #endif
 }
 
+void start_time(clock_t * time){*time = clock();}
+
+double get_time(clock_t * time){return ((double)(clock() - *time))/CLOCKS_PER_SEC;}
+
 void setBombs(int ROW, int COL, int QTDBOMBS, houses * pt_board){
     for (int b = 0; b < QTDBOMBS; b++){
         int slot = rand() % (ROW*COL);
@@ -50,7 +54,6 @@ void setNumbers(int ROW, int COL, houses * pt_board){
     }
 }
 
-
 houses * init_board(int ROW, int COL, int QTDBOMBS, houses * board){
     board = (houses*) malloc(ROW*COL*sizeof(houses));
     for(int i = 0; i < ROW;i++){
@@ -63,7 +66,6 @@ houses * init_board(int ROW, int COL, int QTDBOMBS, houses * board){
     setNumbers(ROW,COL,board);
     return board;
 }
-
 
 void print_board(int ROW, int COL, houses * board){
     printf("\n");
@@ -94,8 +96,12 @@ void print_board(int ROW, int COL, houses * board){
     printf("\n");
 }
 
-int reveal(int ROW, int COL, int indexR, int indexC ,houses * pt_board, int inGame){
+int reveal(int ROW, int COL, int indexR, int indexC ,houses * pt_board, int inGame, int * avaliableT, clock_t * time){
     if(inGame >= 0 && inGame < ((ROW*COL) - QTDBOMBS)){
+        if (inGame==0){
+            *avaliableT = 1;
+            start_time(time);
+        }
         int pos = indexR*COL+indexC;
         pt_board[pos].status = 1;
         if(pt_board[pos].face[1] != FBOMB){
@@ -105,7 +111,7 @@ int reveal(int ROW, int COL, int indexR, int indexC ,houses * pt_board, int inGa
                     for(int j = -1; j < 2;j++){
                         int rNew = indexR - i, cNew = indexC - j;
                         if((rNew) < ROW && (rNew) >= 0 && (cNew) < COL && (cNew)  >= 0 &&  pt_board[(rNew)*COL+(cNew)].status == 0){
-                            reveal(ROW,COL,(rNew),(cNew),pt_board,inGame);
+                            reveal(ROW,COL,(rNew),(cNew),pt_board,inGame,avaliableT,time);
                         }
                     }
                 }
@@ -166,6 +172,9 @@ houses * init_game(houses * pt_board, FILE * save){
     srand((unsigned int)time(NULL));  
     clear_screen();
     printf("Insira uma coodenada abaixo de de x = [1,%d] e y = [1,%d]\nDigite as Coordenadas \"-1 -1\" para voltar ao menu\nDigite as Coordenadas \"-2 -2\" para receber ajuda\n",ROW,COL);
+houses * init_game(houses * pt_board, FILE * save, int * avaliableT, clock_t * time){
+    clear_screen();
+    printf("\nInsira uma coodenada abaixo de de x = [1,%d] e y = [1,%d]\nDigite Coordenadas \"-1 -1\" para voltar ao menu\n\"-2 -2 para ver o tempo de jogo\"\n\n",ROW,COL);
     print_board(ROW, COL, pt_board);
     int inGame = 0, r, c, rHelp = -1, cHelp = -1;
     while(inGame >= 0 && inGame != SEGUROS){
@@ -173,15 +182,17 @@ houses * init_game(houses * pt_board, FILE * save){
         r--;
         c--;
         if(r < ROW && r >= 0 && c < COL && c >= 0){
-            inGame = reveal(ROW,COL,r,c,pt_board,inGame);
+            inGame = reveal(ROW,COL,r,c,pt_board,inGame,avaliableT,time);
             clear_screen();
             if(inGame > 0){
-                printf("Insira uma coodenada abaixo de de x = [1,%d] e y = [1,%d]\nDigite as Coordenadas \"-1 -1\" para voltar ao menu\nDigite as Coordenadas \"-2 -2\" para receber ajuda\n",ROW,COL);
+                printf("\nInsira uma coodenada abaixo de de x = [1,%d] e y = [1,%d]\nDigite Coordenadas \"-1 -1\" para voltar ao menu\n\"-2 -2 para ver o tempo de jogo\"\n \"-3 -3\" para receber ajuda\n\n",ROW,COL);
             }
             else if(inGame == -1){
+                printf("Tempo decorrido: %.2f\n",get_time(time));
                 printf("GAME OVER!\n");
             }
             else if(inGame == SEGUROS){
+                printf("Tempo decorrido: %.2f\n",get_time(time));
                 printf("Parabéns, Você Ganhou!\n");
             }            
             print_board(ROW, COL, pt_board);
@@ -193,18 +204,21 @@ houses * init_game(houses * pt_board, FILE * save){
             scanf("%d",&i);
             if(!i){
                 clear_screen();
-                init_menu(pt_board, save,1,1);
+                init_menu(pt_board, save,1,1,1,time);
+            }
+            else{
+                printf("\nInsira uma coodenada abaixo de de x = [1,%d] e y = [1,%d]\nDigite Coordenadas \"-1 -1\" para voltar ao menu\n\"-2 -2 para ver o tempo de jogo\"\n \"-3 -3\" para receber ajuda\n\n",ROW,COL);
             }
         }
         else if((r == -3) && (c == -3)){
+            if (*avaliableT){printf("\nTempo decorrido: %.2f\n",get_time(time));}
+            else {printf("\nNenhum tempo decorrido ainda.\n");}
+        }
+        else if((r == -4) && (c == -4)){
             help(&rHelp,&cHelp,pt_board);
-            clear_screen();
-            printf("Insira uma coodenada abaixo de de x = [1,%d] e y = [1,%d]\nDigite as Coordenadas \"-1 -1\" para voltar ao menu\nDigite as Coordenadas \"-2 -2\" para receber ajuda\n",ROW,COL);
-            print_board(ROW, COL, pt_board);
-            printf("Tente uma das Casas bloqueadas ao redor da casa nas Coordenadas x = \"%d\" e y = \"%d\"\n",rHelp,cHelp);
-            cHelp = -1; 
+            printf("\nTente as Coordenadas x = \"%d\" e y = \"%d\"\n\n",rHelp,cHelp);
+            cHelp = -1;
             rHelp = -1;
-            
         }
         else{
             printf("\nInsira uma Coordenada Válida\n");
@@ -213,49 +227,55 @@ houses * init_game(houses * pt_board, FILE * save){
     return pt_board;
 }
 
- void init_menu(houses * board, FILE * save,int avaliableL,int avaliableS){   
-     menu i = -1;
-     int bufferI;
-     printf("Campo Minado\n\n");
-     printf("Iniciar Novo Jogo - 0\n");
-     printf("Salvar Jogo - 1\n");
-     printf("Carregar Jogo - 2\n");
-     printf("Sair - 3\n\n");
-     scanf("%d",&bufferI);
-     i = bufferI;
-     switch(i){
-         case START : 
-             board = init_board(ROW,COL,QTDBOMBS,board);
-             board = init_game(board, save);
-             break;
-         case SAVE :
-            if(avaliableS){
-
-            }
-            else{
-                clear_screen();
-                printf("Você Não pode Salvar o Jogo ainda!\n\n");
-                init_menu(board,save,0,0);
-            }
-             break;
-         case LOAD :
-            if(avaliableL){
-
-            }
-            else{
-                clear_screen();
-                printf("Você Não tem nenhum jogo iniado ainda!\n\n");
-                init_menu(board,save,0,0);
-            }
-             break;
-         case EXIT :
-             printf("\nVou sentir Saudade :(\n");
-             break;
-         default :
-             printf("Insira um Número Valido");
-
-     }
-    
- }
-
-
+ void init_menu(houses * board, FILE * save,int avaliableL,int avaliableS,int avaliableT, clock_t * time){   
+	menu i = -1;
+	int bufferI;
+	printf("Campo Minado\n\n");
+	printf("Iniciar Novo Jogo - 0\n");
+	printf("Salvar Jogo - 1\n");
+	printf("Carregar Jogo - 2\n");
+	printf("Tempo Jogo - 3\n");
+	printf("Sair - 4\n\n");
+	scanf("%d",&bufferI);
+	i = bufferI;
+	switch(i){
+		case START : 
+			board = init_board(ROW,COL,QTDBOMBS,board);
+			board = init_game(board, save, &avaliableT,time);
+			break;
+		case SAVE :
+		if(avaliableS){
+			//
+		}
+		else{
+			clear_screen();
+			printf("Você Não pode Salvar o Jogo ainda!\n\n");
+			init_menu(board,save,0,0,0,time);
+		}
+			break;
+		case LOAD :
+		if(avaliableL){
+			//
+		}
+		else{
+			clear_screen();
+			printf("Você Não tem nenhum jogo iniciado ainda!\n\n");
+			init_menu(board,save,0,0,0,time);
+		}
+			break;
+		case TIME:
+			if(avaliableT){
+				printf("Tempo decorrido: %.2f\n",get_time(time));
+			}
+			else {
+				clear_screen();
+				printf("Você Não tem nenhum jogo iniciado ainda!\n\n");
+				init_menu(board,save,0,0,0,time);            
+			}
+		case EXIT :
+			printf("\nVou sentir Saudade :(\n");
+			break;
+		default :
+			printf("Insira um Número Valido");
+	}
+}
