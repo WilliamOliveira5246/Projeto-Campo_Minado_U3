@@ -129,8 +129,10 @@ int calc_prob(int r, int c, houses * board){
     for(int i = -1; i < 2;i++){
         for(int j = -1; j < 2;j++){
             int rNew = r - i, cNew = c - j;
-            if((rNew) < ROW && (rNew) >= 0 && (cNew) < COL && (cNew)  >= 0 &&  board[(rNew)*COL+(cNew)].status == 0){
-                total++;
+            if((rNew) < ROW && (rNew) >= 0 && (cNew) < COL && (cNew)  >= 0){
+                if(board[(rNew)*COL+(cNew)].status == 0){
+                    total++;
+                }                
             }
         }
     }
@@ -144,8 +146,8 @@ void help(int * r,int * c, houses * board){
     for(int x = 0; x < ROW && index == 0;x++){
         for(int y = 0; y < COL && index == 0;y++){
             buffer = x*COL+y;
-            if(board[index].status == 1){
-                pos = &board[index];
+            if(board[buffer].status == 1 && board[buffer].face[1] != FNULL){
+                pos = &(board[buffer]);
                 rPos = x, cPos = y;
                 index = 1;                
             }
@@ -158,23 +160,20 @@ void help(int * r,int * c, houses * board){
             if(board[buffer].status == 1 && board[buffer].face[1] != FNULL){
                 probA = calc_prob(x,y,board);
                 if(probA > probM){                
-                    pos = &board[buffer];
+                    pos = &(board[buffer]);
                     *r = x;
                     *c = y;
                 }
             }        
         }
     }
+    (*r)++;
+    (*c)++;
 }
 
-
-houses * init_game(houses * pt_board, FILE * save){
-    srand((unsigned int)time(NULL));  
-    clear_screen();
-    printf("Insira uma coodenada abaixo de de x = [1,%d] e y = [1,%d]\nDigite as Coordenadas \"-1 -1\" para voltar ao menu\nDigite as Coordenadas \"-2 -2\" para receber ajuda\n",ROW,COL);
 houses * init_game(houses * pt_board, FILE * save, int * avaliableT, clock_t * time){
     clear_screen();
-    printf("\nInsira uma coodenada abaixo de de x = [1,%d] e y = [1,%d]\nDigite Coordenadas \"-1 -1\" para voltar ao menu\n\"-2 -2 para ver o tempo de jogo\"\n\n",ROW,COL);
+    printf("\nInsira uma coodenada abaixo de de x = [1,%d] e y = [1,%d]\nDigite Coordenadas \"-1 -1\" para voltar ao menu\n\"-2 -2 para ver o tempo de jogo\"\n\"-3 -3\" para receber ajuda\n",ROW,COL);
     print_board(ROW, COL, pt_board);
     int inGame = 0, r, c, rHelp = -1, cHelp = -1;
     while(inGame >= 0 && inGame != SEGUROS){
@@ -185,7 +184,7 @@ houses * init_game(houses * pt_board, FILE * save, int * avaliableT, clock_t * t
             inGame = reveal(ROW,COL,r,c,pt_board,inGame,avaliableT,time);
             clear_screen();
             if(inGame > 0){
-                printf("\nInsira uma coodenada abaixo de de x = [1,%d] e y = [1,%d]\nDigite Coordenadas \"-1 -1\" para voltar ao menu\n\"-2 -2 para ver o tempo de jogo\"\n \"-3 -3\" para receber ajuda\n\n",ROW,COL);
+                printf("\nInsira uma coodenada abaixo de de x = [1,%d] e y = [1,%d]\nDigite Coordenadas \"-1 -1\" para voltar ao menu\n\"-2 -2 para ver o tempo de jogo\"\n\"-3 -3\" para receber ajuda\n",ROW,COL);
             }
             else if(inGame == -1){
                 printf("Tempo decorrido: %.2f\n",get_time(time));
@@ -207,7 +206,7 @@ houses * init_game(houses * pt_board, FILE * save, int * avaliableT, clock_t * t
                 init_menu(pt_board, save,1,1,1,time);
             }
             else{
-                printf("\nInsira uma coodenada abaixo de de x = [1,%d] e y = [1,%d]\nDigite Coordenadas \"-1 -1\" para voltar ao menu\n\"-2 -2 para ver o tempo de jogo\"\n \"-3 -3\" para receber ajuda\n\n",ROW,COL);
+                printf("\nInsira uma coodenada abaixo de de x = [1,%d] e y = [1,%d]\nDigite Coordenadas \"-1 -1\" para voltar ao menu\n\"-2 -2 para ver o tempo de jogo\"\n\"-3 -3\" para receber ajuda\n",ROW,COL);
             }
         }
         else if((r == -3) && (c == -3)){
@@ -216,7 +215,7 @@ houses * init_game(houses * pt_board, FILE * save, int * avaliableT, clock_t * t
         }
         else if((r == -4) && (c == -4)){
             help(&rHelp,&cHelp,pt_board);
-            printf("\nTente as Coordenadas x = \"%d\" e y = \"%d\"\n\n",rHelp,cHelp);
+            printf("\nTente uma casa ao redor das Coordenadas x = \"%d\" e y = \"%d\"\n\n",rHelp,cHelp);
             cHelp = -1;
             rHelp = -1;
         }
