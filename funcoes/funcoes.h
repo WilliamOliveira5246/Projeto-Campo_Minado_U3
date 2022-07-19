@@ -25,7 +25,9 @@ void help(int * r,int * c, houses * board);
 
 houses * init_game(houses * pt_board, FILE * save, int * avaliableT, time_t * time);
 
-void init_menu(houses * board,FILE * save,int avaliableL,int avaliableS, int avaliableT,time_t * time);
+void print_menu();
+
+void init_menu(houses * board,FILE * save, int avaliableT,time_t * time);
 
 
 #endif

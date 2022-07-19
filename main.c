@@ -13,6 +13,6 @@ int main(){
     srand(time(NULL));
     time_t time = 0;
     clear_screen();
-    init_menu(board,save,0,0,0,&time,0);
+    init_menu(board,save,0,&time);
     return 0;
 }
