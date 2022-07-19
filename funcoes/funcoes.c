@@ -15,9 +15,9 @@ void clear_screen(){
 #endif
 }
 
-void start_time(clock_t * time){*time = clock();}
+void start_time(clock_t * time){*time = system("time(1)");}
 
-double get_time(clock_t * time){return ((double)(clock() - *time))/CLOCKS_PER_SEC;}
+double get_time(clock_t * time){return ((double)((system("time(1)") - *time)))/CLOCKS;}
 
 void setBombs(int ROW, int COL, int QTDBOMBS, houses * pt_board){
     for (int b = 0; b < QTDBOMBS; b++){
@@ -124,8 +124,8 @@ int reveal(int ROW, int COL, int indexR, int indexC ,houses * pt_board, int inGa
     return inGame;
 }
 
-int calc_prob(int r, int c, houses * board){
-    int total = 0, prob;
+float calc_prob(int r, int c, houses * board){
+    float total = 0, prob;
     for(int i = -1; i < 2;i++){
         for(int j = -1; j < 2;j++){
             int rNew = r - i, cNew = c - j;
@@ -136,24 +136,24 @@ int calc_prob(int r, int c, houses * board){
             }
         }
     }
-    prob = 100 - (((board[r*COL+c].face[1] - '0')*10)/total);
+    prob = 1 - ((board[r*COL+c].face[1] - '0')/total);
     return prob;
 }
 
 void help(int * r,int * c, houses * board){
-    int index = 0, rPos, cPos, buffer;
+    int index = 0, buffer;
     houses * pos;
     for(int x = 0; x < ROW && index == 0;x++){
         for(int y = 0; y < COL && index == 0;y++){
             buffer = x*COL+y;
             if(board[buffer].status == 1 && board[buffer].face[1] != FNULL){
                 pos = &(board[buffer]);
-                rPos = x, cPos = y;
+                *r = x, *c = y;
                 index = 1;                
             }
         }
     }
-    int probM = calc_prob(rPos,cPos,board),probA;
+    float probM = calc_prob(*r,*c,board),probA;
     for(int x = 0; x < ROW;x++){
         for(int y = 0; y < COL;y++){
             buffer = x*COL+y;
@@ -161,14 +161,12 @@ void help(int * r,int * c, houses * board){
                 probA = calc_prob(x,y,board);
                 if(probA > probM){                
                     pos = &(board[buffer]);
-                    *r = x;
-                    *c = y;
+                    *r = x, *c = y;
                 }
             }        
         }
     }
-    (*r)++;
-    (*c)++;
+    
 }
 
 houses * init_game(houses * pt_board, FILE * save, int * avaliableT, clock_t * time){
@@ -204,7 +202,7 @@ houses * init_game(houses * pt_board, FILE * save, int * avaliableT, clock_t * t
             scanf("%d",&i);
             if(!i){
                 clear_screen();
-                init_menu(pt_board, save,1,1,1,time);
+                init_menu(pt_board, save,1,1,1,time,0);
             }
             else{
                 printf("\nInsira uma coodenada abaixo de de x = [1,%d] e y = [1,%d]\nDigite Coordenadas \"-1 -1\" para voltar ao menu\n\"-2 -2 para ver o tempo de jogo\"\n\"-3 -3\" para receber ajuda\n",ROW,COL);
@@ -215,7 +213,7 @@ houses * init_game(houses * pt_board, FILE * save, int * avaliableT, clock_t * t
         }
         else if((r == -4) && (c == -4) && avaliableH){
             help(&rHelp,&cHelp,pt_board);
-            printf("\nTente uma casa ao redor das Coordenadas x = \"%d\" e y = \"%d\"\n\n",rHelp,cHelp);
+            printf("\nTente uma casa ao redor das Coordenadas x = \"%d\" e y = \"%d\"\n\n",(rHelp+1),(cHelp+1));
             cHelp = -1;
             rHelp = -1;
         }
@@ -226,8 +224,8 @@ houses * init_game(houses * pt_board, FILE * save, int * avaliableT, clock_t * t
     return pt_board;
 }
 
- void init_menu(houses * board, FILE * save,int avaliableL,int avaliableS,int avaliableT, clock_t * time){   
-	menu i = -1;
+void init_menu(houses * board, FILE * save,int avaliableL,int avaliableS,int avaliableT, clock_t * time,int exit){   
+    menu i = -1;
 	int bufferI;
 	printf("Campo Minado\n\n");
 	printf("Iniciar Novo Jogo - 0\n");
@@ -249,7 +247,7 @@ houses * init_game(houses * pt_board, FILE * save, int * avaliableT, clock_t * t
 		else{
 			clear_screen();
 			printf("Você Não pode Salvar o Jogo ainda!\n\n");
-			init_menu(board,save,0,0,0,time);
+			init_menu(board,save,0,0,0,time,0);
 		}
 			break;
 		case LOAD :
@@ -259,7 +257,7 @@ houses * init_game(houses * pt_board, FILE * save, int * avaliableT, clock_t * t
 		else{
 			clear_screen();
 			printf("Voce Nao tem nenhum jogo iniciado ainda!\n\n");
-			init_menu(board,save,0,0,0,time);
+			init_menu(board,save,0,0,0,time,0);
 		}
 			break;
 		case TIME:
@@ -269,12 +267,13 @@ houses * init_game(houses * pt_board, FILE * save, int * avaliableT, clock_t * t
 			else {
 				clear_screen();
 				printf("Voce Nao tem nenhum jogo iniciado ainda!\n\n");
-				init_menu(board,save,0,0,0,time);            
+				init_menu(board,save,0,0,0,time,0);            
 			}
 		case EXIT :
-			printf("\nVou sentir Saudade :(\n");
+			printf("\nVou sentir Saudade :(\n");   
 			break;
 		default :
 			printf("Insira um Número Valido");
 	}
+    
 }

@@ -19,13 +19,13 @@ void print_board(int ROW, int COL, houses * board);
 
 int reveal(int ROW, int COL, int indexR, int indexC ,houses * pt_board, int inGame, int * avaliableT, clock_t * time);
 
-int calc_prob(int r, int c, houses * board);
+float calc_prob(int r, int c, houses * board);
 
 void help(int * r,int * c, houses * board);
 
 houses * init_game(houses * pt_board, FILE * save, int * avaliableT, clock_t * time);
 
-void init_menu(houses * board,FILE * save,int avaliableL,int avaliableS, int avaliableT,clock_t * time);
+void init_menu(houses * board,FILE * save,int avaliableL,int avaliableS, int avaliableT,clock_t * time,int exit);
 
 
 #endif
