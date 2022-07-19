@@ -8,8 +8,6 @@ typedef struct {
 
 typedef enum{
     START,
-    SAVE,
-    LOAD,
     TIME,
     EXIT
 }menu;
