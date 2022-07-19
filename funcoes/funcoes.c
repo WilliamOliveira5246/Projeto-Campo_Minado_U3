@@ -160,13 +160,52 @@ void help(int * r,int * c, houses * board){
             if(board[buffer].status == 1 && board[buffer].face[1] != FNULL){
                 probA = calc_prob(x,y,board);
                 if(probA > probM){                
+                    probM = probA;
                     pos = &(board[buffer]);
                     *r = x, *c = y;
                 }
             }        
         }
     }
-    
+}
+
+void init_bot(houses * pt_board, FILE * save, int * avaliableT,time_t * time){
+    int inGame = 0, r, c, rHelp = -1, cHelp = -1, round=0;
+    while(inGame >= 0 && inGame != SEGUROS && round < 10){
+        if (inGame==0){
+            r = rand() % ROW;
+            c = rand() % COL;
+            *avaliableT = 1;
+            clear_screen();
+            print_board(ROW, COL, pt_board);
+            printf("%d - Escolhendo coordenada (%d,%d)\n",(round+1),(r+1),(c+1));
+            inGame = reveal(ROW,COL,r,c,pt_board,inGame,avaliableT,time);
+            printf("inGame = %d",inGame);
+            round++;
+        } 
+        else {
+            if(inGame > 0){
+                print_board(ROW, COL, pt_board);
+                help(&rHelp,&cHelp,pt_board);
+
+
+                printf("%d - Escolhendo coordenada (%d,%d)\n",(round+1),(r+1),(c+1));
+                inGame = reveal(ROW,COL,r,c,pt_board,inGame,avaliableT,time);
+                printf("inGame = %d",inGame);
+                round++;
+            }
+            else if(inGame == 10 || inGame == -1){
+                printf("Tempo decorrido: %.0f segundos.\n",get_time(time));
+                printf("GAME OVER!\n");
+            }
+            else if(inGame == SEGUROS){
+                printf("Tempo decorrido: %.0f segundos.\n",get_time(time));
+                printf("A IA venceu!\n");
+            }            
+            printf("\n---------------------------------------------------\n");
+            print_board(ROW, COL, pt_board);
+        }
+    }
 }
 
 houses * init_game(houses * pt_board, FILE * save, int * avaliableT, time_t * time){
@@ -228,8 +267,9 @@ houses * init_game(houses * pt_board, FILE * save, int * avaliableT, time_t * ti
 void print_menu(){
     printf("Campo Minado\n\n");
 	printf("Iniciar Novo Jogo - 0\n");
-	printf("Tempo Jogo - 1\n");
-	printf("Sair - 2\n\n");
+    printf("Iniciar BOT - 1\n");
+	printf("Tempo Jogo - 2\n");
+	printf("Sair - 3\n\n");
 }
 
  void init_menu(houses * board,FILE * save, int avaliableT,time_t * time){   
@@ -243,6 +283,10 @@ void print_menu(){
             case START : 
                 board = init_board(ROW,COL,QTDBOMBS,board);
                 board = init_game(board, save, &avaliableT,time);
+                break;
+            case BOT :
+                board = init_board(ROW,COL,QTDBOMBS,board);
+                init_bot(board, save, &avaliableT,time);
                 break;
             case TIME:
                 if(avaliableT){

@@ -8,6 +8,7 @@ typedef struct {
 
 typedef enum{
     START,
+    BOT,
     TIME,
     EXIT
 }menu;

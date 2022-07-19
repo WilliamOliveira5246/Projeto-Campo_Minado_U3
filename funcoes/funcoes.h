@@ -23,6 +23,8 @@ float calc_prob(int r, int c, houses * board);
 
 void help(int * r,int * c, houses * board);
 
+void init_bot(houses * pt_board, FILE * save, int * avaliableT,time_t * time);
+
 houses * init_game(houses * pt_board, FILE * save, int * avaliableT, time_t * time);
 
 void print_menu();
