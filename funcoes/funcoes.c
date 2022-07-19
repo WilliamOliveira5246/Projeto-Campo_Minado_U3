@@ -173,15 +173,16 @@ void help(int * r,int * c, houses * board){
 
 houses * init_game(houses * pt_board, FILE * save, int * avaliableT, clock_t * time){
     clear_screen();
-    printf("\nInsira uma coodenada abaixo de de x = [1,%d] e y = [1,%d]\nDigite Coordenadas \"-1 -1\" para voltar ao menu\n\"-2 -2 para ver o tempo de jogo\"\n\"-3 -3\" para receber ajuda\n",ROW,COL);
+    printf("\nInsira uma coodenada abaixo de de x = [1,%d] e y = [1,%d]\nDigite Coordenadas \"-1 -1\" para voltar ao menu\n",ROW,COL);
     print_board(ROW, COL, pt_board);
-    int inGame = 0, r, c, rHelp = -1, cHelp = -1;
+    int inGame = 0, r, c, rHelp = -1, cHelp = -1, avaliableH = 0;
     while(inGame >= 0 && inGame != SEGUROS){
         scanf("%d %d",&r,&c);
         r--;
         c--;
         if(r < ROW && r >= 0 && c < COL && c >= 0){
             inGame = reveal(ROW,COL,r,c,pt_board,inGame,avaliableT,time);
+            avaliableH = 1;
             clear_screen();
             if(inGame > 0){
                 printf("\nInsira uma coodenada abaixo de de x = [1,%d] e y = [1,%d]\nDigite Coordenadas \"-1 -1\" para voltar ao menu\n\"-2 -2 para ver o tempo de jogo\"\n\"-3 -3\" para receber ajuda\n",ROW,COL);
@@ -209,11 +210,10 @@ houses * init_game(houses * pt_board, FILE * save, int * avaliableT, clock_t * t
                 printf("\nInsira uma coodenada abaixo de de x = [1,%d] e y = [1,%d]\nDigite Coordenadas \"-1 -1\" para voltar ao menu\n\"-2 -2 para ver o tempo de jogo\"\n\"-3 -3\" para receber ajuda\n",ROW,COL);
             }
         }
-        else if((r == -3) && (c == -3)){
+        else if((r == -3) && (c == -3) && avaliableT){
             if (*avaliableT){printf("\nTempo decorrido: %.2f\n",get_time(time));}
-            else {printf("\nNenhum tempo decorrido ainda.\n");}
         }
-        else if((r == -4) && (c == -4)){
+        else if((r == -4) && (c == -4) && avaliableH){
             help(&rHelp,&cHelp,pt_board);
             printf("\nTente uma casa ao redor das Coordenadas x = \"%d\" e y = \"%d\"\n\n",rHelp,cHelp);
             cHelp = -1;
@@ -258,7 +258,7 @@ houses * init_game(houses * pt_board, FILE * save, int * avaliableT, clock_t * t
 		}
 		else{
 			clear_screen();
-			printf("Você Não tem nenhum jogo iniciado ainda!\n\n");
+			printf("Voce Nao tem nenhum jogo iniciado ainda!\n\n");
 			init_menu(board,save,0,0,0,time);
 		}
 			break;
@@ -268,7 +268,7 @@ houses * init_game(houses * pt_board, FILE * save, int * avaliableT, clock_t * t
 			}
 			else {
 				clear_screen();
-				printf("Você Não tem nenhum jogo iniciado ainda!\n\n");
+				printf("Voce Nao tem nenhum jogo iniciado ainda!\n\n");
 				init_menu(board,save,0,0,0,time);            
 			}
 		case EXIT :
