@@ -124,24 +124,31 @@ int reveal(int ROW, int COL, int indexR, int indexC ,houses * pt_board, int inGa
     return inGame;
 }
 
-float calc_prob(int r, int c, houses * board){
-    float total = 0, prob;
+float calc_prob(int r, int c, houses * board, float * total, int * mat){
+    *total = 0;
+    int t = 0;
+    float prob;
     for(int i = -1; i < 2;i++){
         for(int j = -1; j < 2;j++){
             int rNew = r - i, cNew = c - j;
             if((rNew) < ROW && (rNew) >= 0 && (cNew) < COL && (cNew)  >= 0){
                 if(board[(rNew)*COL+(cNew)].status == 0){
-                    total++;
+                    (mat[t*2]) = rNew;
+                    (mat[t*2+1]) = cNew;
+                    t++;
+                    (*total)++;
                 }                
             }
         }
     }
-    prob = 1 - ((board[r*COL+c].face[1] - '0')/total);
+    prob = 1 - ((board[r*COL+c].face[1] - '0')/(*total));
     return prob;
 }
 
-void help(int * r,int * c, houses * board){
-    int index = 0, buffer;
+int help(int * r,int * c, houses * board,float * total, int * mat){
+    int index = 0, buffer, cont = 0,* m;
+    float  count = 0;
+    m = (int*) malloc(16*sizeof(int));
     houses * pos;
     for(int x = 0; x < ROW && index == 0;x++){
         for(int y = 0; y < COL && index == 0;y++){
@@ -153,13 +160,18 @@ void help(int * r,int * c, houses * board){
             }
         }
     }
-    float probM = calc_prob(*r,*c,board),probA;
+    float probM = calc_prob(*r,*c,board,total,mat),probA;
     for(int x = 0; x < ROW;x++){
         for(int y = 0; y < COL;y++){
             buffer = x*COL+y;
             if(board[buffer].status == 1 && board[buffer].face[1] != FNULL){
-                probA = calc_prob(x,y,board);
-                if(probA > probM){                
+                probA = calc_prob(x,y,board,&count,m);
+                if(probA > probM){ 
+                    for(int i = 0; i < count;i++){                        
+                        mat[i*2] = m[i*2];
+                        mat[i*2+1] = m[i*2+1];
+                    }   
+                    *total = count;            
                     probM = probA;
                     pos = &(board[buffer]);
                     *r = x, *c = y;
@@ -167,11 +179,17 @@ void help(int * r,int * c, houses * board){
             }        
         }
     }
+    free(m);
+    if(probM <= 0.5){
+        cont = 1;
+    }
+    return cont;
 }
 
 void init_bot(houses * pt_board, FILE * save, int * avaliableT,time_t * time){
-    int inGame = 0, r, c, rHelp = -1, cHelp = -1, round=0;
-    while(inGame >= 0 && inGame != SEGUROS && round < 10){
+    int inGame = 0, r, c, rHelp = -2, cHelp = -2, round=0, cont,t ,rNew,cNew, buffer = 0;
+    float total;
+    while(inGame >= 0 && inGame != SEGUROS){
         if (inGame==0){
             r = rand() % ROW;
             c = rand() % COL;
@@ -185,25 +203,69 @@ void init_bot(houses * pt_board, FILE * save, int * avaliableT,time_t * time){
         } 
         else {
             if(inGame > 0){
-                print_board(ROW, COL, pt_board);
-                help(&rHelp,&cHelp,pt_board);
-
-
+                int * mat =(int*) malloc(16*sizeof(int));
+                cont = help(&rHelp,&cHelp,pt_board,&total,mat);
+                if(cont){
+                    free(mat);
+                    mat =(int*) malloc(200*sizeof(int));
+                    int index;
+                    t = 0;
+                    for(int x = 0; x < ROW;x++){
+                        for(int y = 0; y < COL;y++){
+                            index = 1;
+                            for(int i = -1; i < 2;i++){
+                                for(int j = -1; j < 2;j++){
+                                    rNew = x - i, cNew = y - j;
+                                    if((rNew) < ROW && (rNew) >= 0 && (cNew) < COL && (cNew)  >= 0){
+                                        if(pt_board[rNew*COL+cNew].status == 1){
+                                            index = 0;
+                                        }
+                                    }
+                                }
+                            }
+                            if(index){                                                              
+                                mat[t*2] = x;
+                                mat[t*2+1] = y;
+                                t++;
+                            }
+                        }
+                    }                     
+                }
+                else{
+                    t = (int) total;
+                }
+                int p = rand() % t;
+                r = mat[p*2];
+                c = mat[p*2+1]; 
+                free(mat);
                 printf("%d - Escolhendo coordenada (%d,%d)\n",(round+1),(r+1),(c+1));
                 inGame = reveal(ROW,COL,r,c,pt_board,inGame,avaliableT,time);
                 printf("inGame = %d",inGame);
                 round++;
             }
-            else if(inGame == 10 || inGame == -1){
-                printf("Tempo decorrido: %.0f segundos.\n",get_time(time));
+
+        }
+        if(inGame == -1){
+                printf("\n\nTempo decorrido: %.0f segundos.\n",get_time(time));
                 printf("GAME OVER!\n");
-            }
-            else if(inGame == SEGUROS){
-                printf("Tempo decorrido: %.0f segundos.\n",get_time(time));
+                printf("A IA jogou por %d Rodadas",round);
+                buffer = 1;
+        }
+        else if(inGame == SEGUROS){
+                printf("\n\nTempo decorrido: %.0f segundos.\n",get_time(time));
                 printf("A IA venceu!\n");
+                buffer = 1;
+        }            
+        printf("\n---------------------------------------------------\n");
+        print_board(ROW, COL, pt_board);
+        if(buffer){
+            printf("\nDigite as coordenadas \"-1 -1\" para voltar ao menu\n");
+            while(r != -1 && c != -1){
+                scanf("%d %d",&rHelp,&cHelp);        
+                clear_screen();
+                print_menu();
+                return;                         
             }            
-            printf("\n---------------------------------------------------\n");
-            print_board(ROW, COL, pt_board);
         }
     }
 }
@@ -212,7 +274,8 @@ houses * init_game(houses * pt_board, FILE * save, int * avaliableT, time_t * ti
     clear_screen();
     printf("\nInsira uma coodenada abaixo de de x = [1,%d] e y = [1,%d]\nDigite Coordenadas \"-1 -1\" para voltar ao menu\n",ROW,COL);
     print_board(ROW, COL, pt_board);
-    int inGame = 0, r, c, rHelp = -1, cHelp = -1, avaliableH = 0, index = 1;
+    float lixo;
+    int inGame = 0, r, c, rHelp = -1, cHelp = -1, avaliableH = 0, index = 1,cont,* lixomaior = (int*) malloc(16*sizeof(int));
     while(inGame >= 0 && inGame != SEGUROS && index){
         scanf("%d %d",&r,&c);
         r--;
@@ -222,7 +285,7 @@ houses * init_game(houses * pt_board, FILE * save, int * avaliableT, time_t * ti
             avaliableH = 1;
             clear_screen();
             if(inGame > 0){
-                printf("\nInsira uma coodenada abaixo de de x = [1,%d] e y = [1,%d]\nDigite Coordenadas \"-1 -1\" para voltar ao menu\n\"-2 -2 para ver o tempo de jogo\"\n\"-3 -3\" para receber ajuda\n",ROW,COL);
+                printf("\nInsira uma coodenada abaixo de de x = [1,%d] e y = [1,%d]\nDigite Coordenadas \"-1 -1\" para voltar ao menu\n\"-2 -2\" para ver o tempo de jogo\n\"-3 -3\" para receber ajuda\n",ROW,COL);
             }
             else if(inGame == -1){
                 printf("Tempo decorrido: %.0f segundos.\n",get_time(time));
@@ -245,15 +308,20 @@ houses * init_game(houses * pt_board, FILE * save, int * avaliableT, time_t * ti
                 print_menu();
             }
             else{
-                printf("\nInsira uma coodenada abaixo de de x = [1,%d] e y = [1,%d]\nDigite Coordenadas \"-1 -1\" para voltar ao menu\n\"-2 -2 para ver o tempo de jogo\"\n\"-3 -3\" para receber ajuda\n",ROW,COL);
+                printf("\nInsira uma coodenada abaixo de de x = [1,%d] e y = [1,%d]\nDigite Coordenadas \"-1 -1\" para voltar ao menu\n\"-2 -2\" para ver o tempo de jogo\n\"-3 -3\" para receber ajuda\n",ROW,COL);
             }
         }
         else if((r == -3) && (c == -3) && avaliableT){
             if (*avaliableT){printf("\nTempo decorrido: %.0f segundos.\n",get_time(time));}
         }
         else if((r == -4) && (c == -4) && avaliableH){
-            help(&rHelp,&cHelp,pt_board);
-            printf("\nTente uma casa ao redor das Coordenadas x = \"%d\" e y = \"%d\"\n\n",(rHelp+1),(cHelp+1));
+            cont = help(&rHelp,&cHelp,pt_board,&lixo,lixomaior);
+            if(!cont){
+                printf("\nTente uma casa ao redor das Coordenadas x = \"%d\" e y = \"%d\"\n\n",(rHelp+1),(cHelp+1));
+            }
+            else{
+                printf("Tente uma casa aleatória longe das abertas\n\n");
+            }
             cHelp = -1;
             rHelp = -1;
         }
@@ -261,6 +329,7 @@ houses * init_game(houses * pt_board, FILE * save, int * avaliableT, time_t * ti
             printf("\nInsira uma Coordenada Válida\n");
         }
     }
+    free(lixomaior);
     return pt_board;
 }
 
@@ -276,7 +345,7 @@ void print_menu(){
 	menu i = -1;
 	int bufferI;
 	print_menu();	
-    while(i != 2){
+    while(i != 3){
         scanf("%d",&bufferI);
 	    i = bufferI;
         switch(i){
@@ -303,6 +372,7 @@ void print_menu(){
                 break;
             default :
                 printf("\nInsira um Número Valido\n");
+                break;
         }
     }
     

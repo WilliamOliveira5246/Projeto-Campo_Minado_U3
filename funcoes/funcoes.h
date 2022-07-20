@@ -19,9 +19,9 @@ void print_board(int ROW, int COL, houses * board);
 
 int reveal(int ROW, int COL, int indexR, int indexC ,houses * pt_board, int inGame, int * avaliableT, time_t * time);
 
-float calc_prob(int r, int c, houses * board);
+float calc_prob(int r, int c, houses * board, float * total, int * ponteiro);
 
-void help(int * r,int * c, houses * board);
+int help(int * r,int * c, houses * board, float * total, int * ponteiro);
 
 void init_bot(houses * pt_board, FILE * save, int * avaliableT,time_t * time);
 

@@ -14,5 +14,6 @@ int main(){
     time_t time = 0;
     clear_screen();
     init_menu(board,save,0,&time);
+    free(board);
     return 0;
 }
