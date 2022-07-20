@@ -198,7 +198,6 @@ void init_bot(houses * pt_board, FILE * save, int * avaliableT,time_t * time){
             print_board(ROW, COL, pt_board);
             printf("%d - Escolhendo coordenada (%d,%d)\n",(round+1),(r+1),(c+1));
             inGame = reveal(ROW,COL,r,c,pt_board,inGame,avaliableT,time);
-            printf("inGame = %d",inGame);
             round++;
         } 
         else {
@@ -240,20 +239,18 @@ void init_bot(houses * pt_board, FILE * save, int * avaliableT,time_t * time){
                 free(mat);
                 printf("%d - Escolhendo coordenada (%d,%d)\n",(round+1),(r+1),(c+1));
                 inGame = reveal(ROW,COL,r,c,pt_board,inGame,avaliableT,time);
-                printf("inGame = %d",inGame);
                 round++;
             }
 
         }
         if(inGame == -1){
-                printf("\n\nTempo decorrido: %.0f segundos.\n",get_time(time));
                 printf("GAME OVER!\n");
                 printf("A IA jogou por %d Rodadas",round);
                 buffer = 1;
         }
         else if(inGame == SEGUROS){
-                printf("\n\nTempo decorrido: %.0f segundos.\n",get_time(time));
                 printf("A IA venceu!\n");
+                printf("A IA jogou por %d Rodadas",round);
                 buffer = 1;
         }            
         printf("\n---------------------------------------------------\n");
@@ -270,7 +267,7 @@ void init_bot(houses * pt_board, FILE * save, int * avaliableT,time_t * time){
     }
 }
 
-houses * init_game(houses * pt_board, FILE * save, int * avaliableT, time_t * time){
+void init_game(houses * pt_board, FILE * save, int * avaliableT, time_t * time){
     clear_screen();
     printf("\nInsira uma coodenada abaixo de de x = [1,%d] e y = [1,%d]\nDigite Coordenadas \"-1 -1\" para voltar ao menu\n",ROW,COL);
     print_board(ROW, COL, pt_board);
@@ -286,17 +283,24 @@ houses * init_game(houses * pt_board, FILE * save, int * avaliableT, time_t * ti
             clear_screen();
             if(inGame > 0){
                 printf("\nInsira uma coodenada abaixo de de x = [1,%d] e y = [1,%d]\nDigite Coordenadas \"-1 -1\" para voltar ao menu\n\"-2 -2\" para ver o tempo de jogo\n\"-3 -3\" para receber ajuda\n",ROW,COL);
+                print_board(ROW, COL, pt_board);
             }
             else if(inGame == -1){
                 printf("Tempo decorrido: %.0f segundos.\n",get_time(time));
                 printf("GAME OVER!\n");
+                print_board(ROW, COL, pt_board);
+                system("pause");
+                clear_screen();
+                print_menu();
             }
             else if(inGame == SEGUROS){
                 printf("Tempo decorrido: %.0f segundos.\n",get_time(time));
                 printf("Parabéns, Você Ganhou!\n");
+                print_board(ROW, COL, pt_board);
+                system("pause");
+                clear_screen();
+                print_menu();
             }            
-            print_board(ROW, COL, pt_board);
-            
         }
         else if((r == -2) && (c == -2)){
             printf("\nDeseja Retornar ao Menu?\n0 - Sim\n1 - Não\n\n");
@@ -330,7 +334,6 @@ houses * init_game(houses * pt_board, FILE * save, int * avaliableT, time_t * ti
         }
     }
     free(lixomaior);
-    return pt_board;
 }
 
 void print_menu(){
@@ -351,7 +354,7 @@ void print_menu(){
         switch(i){
             case START : 
                 board = init_board(ROW,COL,QTDBOMBS,board);
-                board = init_game(board, save, &avaliableT,time);
+                init_game(board, save, &avaliableT,time);
                 break;
             case BOT :
                 board = init_board(ROW,COL,QTDBOMBS,board);
@@ -363,15 +366,15 @@ void print_menu(){
                 }
                 else {
                     clear_screen();
-                    printf("Voce Nao tem nenhum jogo iniciado ainda!\n\n");
+                    printf("Voce nao tem nenhum jogo iniciado ainda!\n\n");
                     print_menu();           
                 }
                 break;
             case EXIT :
-                printf("\nVou sentir Saudade :(\n");   
+                printf("\nVou sentir saudade :(\n");   
                 break;
             default :
-                printf("\nInsira um Número Valido\n");
+                printf("\nInsira uma Opcao valida!\n");
                 break;
         }
     }

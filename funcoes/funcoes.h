@@ -25,7 +25,7 @@ int help(int * r,int * c, houses * board, float * total, int * ponteiro);
 
 void init_bot(houses * pt_board, FILE * save, int * avaliableT,time_t * time);
 
-houses * init_game(houses * pt_board, FILE * save, int * avaliableT, time_t * time);
+void init_game(houses * pt_board, FILE * save, int * avaliableT, time_t * time);
 
 void print_menu();
 
