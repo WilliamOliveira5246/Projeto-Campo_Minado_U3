@@ -195,7 +195,6 @@ void init_bot(houses * pt_board, int * avaliableT,time_t * time, int * end){
 			c = rand() % COL;
 			*avaliableT = 1;
 			clear_screen();
-			print_board(ROW, COL, pt_board);
 			printf("%d - Escolhendo coordenada (%d,%d)\n",(round+1),(r+1),(c+1));
 			inGame = reveal(ROW,COL,r,c,pt_board,inGame,avaliableT,time);
 			round++;
@@ -244,17 +243,18 @@ void init_bot(houses * pt_board, int * avaliableT,time_t * time, int * end){
 
 		}
 		if(inGame == -1){
+				print_board(ROW, COL, pt_board);
 				printf("GAME OVER!\n");
 				printf("A IA jogou por %d Rodadas",round);
 				buffer = 1;
 		}
 		else if(inGame == SEGUROS){
+				print_board(ROW, COL, pt_board);
 				printf("A IA venceu!\n");
 				printf("A IA jogou por %d Rodadas",round);
 				buffer = 1;
 		}            
 		printf("\n---------------------------------------------------\n");
-		print_board(ROW, COL, pt_board);
 		if(buffer==1){
 			do{
 				printf("\nDeseja retornar ao menu? 0 - sim / 1 - nao\n");
