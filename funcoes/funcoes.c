@@ -186,7 +186,7 @@ int help(int * r,int * c, houses * board,float * total, int * mat){
 	return cont;
 }
 
-void init_bot(houses * pt_board, FILE * save, int * avaliableT,time_t * time){
+void init_bot(houses * pt_board, int * avaliableT,time_t * time, int * end){
 	int inGame = 0, r, c, rHelp = -2, cHelp = -2, round=0, cont,t ,rNew,cNew, buffer = 0;
 	float total;
 	while(inGame >= 0 && inGame != SEGUROS){
@@ -266,7 +266,7 @@ void init_bot(houses * pt_board, FILE * save, int * avaliableT,time_t * time){
 	}
 }
 
-void init_game(houses * pt_board, FILE * save, int * avaliableT, time_t * time){
+void init_game(houses * pt_board, int * avaliableT, time_t * time, int * end){
 	clear_screen();
 	printf("\nInsira uma coodenada abaixo de de x = [1,%d] e y = [1,%d]\nDigite Coordenadas \"-1 -1\" para voltar ao menu\n",ROW,COL);
 	print_board(ROW, COL, pt_board);
@@ -296,13 +296,11 @@ void init_game(houses * pt_board, FILE * save, int * avaliableT, time_t * time){
 			}
 			printf("\n---------------------------------------------------\n");
 			print_board(ROW, COL, pt_board);
-			if(buffer){
-				while(!(r == -1 && c == -1)){
-					printf("\nDigite as coordenadas \"-1 -1\" para voltar ao menu\n");
-					scanf("%d %d",&r,&c);                                 
-				}
-				clear_screen();
-				print_menu();            
+			if(buffer==1){
+				do{
+					printf("\nDeseja retornar ao menu? 0 - sim / 1 - nao\n");
+					scanf("%d",end);                             
+				} while(*end != 1 && *end != 0);
 			}
 		}
 		else if((r == -2) && (c == -2)){
@@ -343,42 +341,37 @@ void print_menu(){
 	printf("Campo Minado\n\n");
 	printf("Iniciar Novo Jogo - 0\n");
 	printf("Iniciar BOT - 1\n");
-	printf("Tempo Jogo - 2\n");
-	printf("Sair - 3\n\n");
+	printf("Sair - 2\n\n");
 }
 
-void init_menu(houses * board,FILE * save, int avaliableT,time_t * time){   
+void init_menu(houses * board, int avaliableT,time_t * time, int * end){   
 	menu i = -1;
 	int bufferI;
-	print_menu();	
-	while(i != 3){
-		scanf("%d",&bufferI);
-		i = bufferI;
+	do {
+		if (*end!=1){
+			clear_screen();
+			print_menu();	
+			scanf("%d",&bufferI);
+			i = bufferI;
+		}
+		else {i=2;}
 		switch(i){
 			case START : 
 				board = init_board(ROW,COL,QTDBOMBS,board);
-				init_game(board, save, &avaliableT,time);
+				init_game(board, &avaliableT,time,end);
+				if (*end){i=2;}
 				break;
 			case BOT :
 				board = init_board(ROW,COL,QTDBOMBS,board);
-				init_bot(board, save, &avaliableT,time);
-				break;
-			case TIME:
-				if(avaliableT){
-					printf("Tempo decorrido: %.0f segundos.\n\n",get_time(time));
-				}
-				else {
-					clear_screen();
-					printf("Voce nao tem nenhum jogo iniciado ainda!\n\n");
-					print_menu();           
-				}
+				init_bot(board, &avaliableT,time,end);
 				break;
 			case EXIT :
-				printf("\nVou sentir saudade :(\n");   
+				printf("\nVou sentir saudade :(\n");
+				*end=1;
 				break;
 			default :
 				printf("\nInsira uma Opcao valida!\n");
 				break;
 		}
-	}
+	} while(i!=2);
 }

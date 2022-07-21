@@ -8,12 +8,14 @@
 
 
 int main(){
-    FILE * save;
-    houses * board = NULL;
-    srand(time(NULL));
-    time_t time = 0;
-    clear_screen();
-    init_menu(board,save,0,&time);
-    free(board);
+    int end=0;
+    do {
+        houses * board = NULL;
+        srand(time(NULL));
+        time_t time = 0;
+        clear_screen();
+        init_menu(board,0,&time,&end);
+        free(board);
+    }while (end==0);
     return 0;
 }

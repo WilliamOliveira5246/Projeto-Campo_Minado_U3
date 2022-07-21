@@ -23,13 +23,13 @@ float calc_prob(int r, int c, houses * board, float * total, int * ponteiro);
 
 int help(int * r,int * c, houses * board, float * total, int * ponteiro);
 
-void init_bot(houses * pt_board, FILE * save, int * avaliableT,time_t * time);
+void init_bot(houses * pt_board, int * avaliableT,time_t * time, int * end);
 
-void init_game(houses * pt_board, FILE * save, int * avaliableT, time_t * time);
+void init_game(houses * pt_board, int * avaliableT, time_t * time, int * end);
 
 void print_menu();
 
-void init_menu(houses * board,FILE * save, int avaliableT,time_t * time);
+void init_menu(houses * board, int avaliableT,time_t * time, int * end);
 
 
 #endif
