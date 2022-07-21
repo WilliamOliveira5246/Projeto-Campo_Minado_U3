@@ -255,83 +255,96 @@ void init_bot(houses * pt_board, int * avaliableT,time_t * time, int * end){
 		}            
 		printf("\n---------------------------------------------------\n");
 		print_board(ROW, COL, pt_board);
-		if(buffer){
-			while(!(r == -1 && c == -1)){
-				printf("\nDigite as coordenadas \"-1 -1\" para voltar ao menu\n");
-				scanf("%d %d",&r,&c);                                 
-			}
-			clear_screen();
-			print_menu();            
+		if(buffer==1){
+			do{
+				printf("\nDeseja retornar ao menu? 0 - sim / 1 - nao\n");
+				scanf("%d",end);                             
+			} while(*end != 1 && *end != 0);
 		}
 	}
 }
 
 void init_game(houses * pt_board, int * avaliableT, time_t * time, int * end){
 	clear_screen();
-	printf("\nInsira uma coodenada abaixo de de x = [1,%d] e y = [1,%d]\nDigite Coordenadas \"-1 -1\" para voltar ao menu\n",ROW,COL);
+	*avaliableT = 0;
 	print_board(ROW, COL, pt_board);
 	float lixo;
-	int inGame = 0, r, c, rHelp = -1, cHelp = -1, avaliableH = 0, index = 1,cont,* lixomaior = (int*) malloc(16*sizeof(int)),buffer = 0;
-	while(inGame >= 0 && inGame != SEGUROS && index){
+	int inGame = 0, r, c, rHelp = -1, cHelp = -1, avaliableH = 0, fim_while = 0,cont,* lixomaior = (int*) malloc(16*sizeof(int)),isEndPlay = 0;
+	while(inGame >= 0 && inGame != SEGUROS){
+		printf("\n>>> Insira uma coodenada igual ou entre de x = [1,%d] e y = [10,%d]\nDigite:\n\"-1 -1\" para encerrar o jogo\n\"-2 -2\" para ver o tempo de jogo\n\"-3 -3\" para receber ajuda\n",ROW,COL);
 		scanf("%d %d",&r,&c);
 		r--;
 		c--;
 		if(r < ROW && r >= 0 && c < COL && c >= 0){
 			inGame = reveal(ROW,COL,r,c,pt_board,inGame,avaliableT,time);
 			avaliableH = 1;
-			clear_screen();
 			if(inGame > 0){
-				printf("\nInsira uma coodenada abaixo de de x = [1,%d] e y = [1,%d]\nDigite Coordenadas \"-1 -1\" para voltar ao menu\n\"-2 -2\" para ver o tempo de jogo\n\"-3 -3\" para receber ajuda\n",ROW,COL);
+				clear_screen();
+				//printf("\n>>> Insira uma coodenada abaixo de de x = [1,%d] e y = [10,%d]\nDigite:\n\"-1 -1\" para encerrar o jogo\n\"-2 -2\" para ver o tempo de jogo\n\"-3 -3\" para receber ajuda\n",ROW,COL);
 				print_board(ROW, COL, pt_board);
 			}
 			else if(inGame == -1){
-				printf("Tempo decorrido: %.0f segundos.\n",get_time(time));
-				printf("GAME OVER!\n");
-				buffer = 1;
+				clear_screen();
+				print_board(ROW, COL, pt_board);
+				printf(">>> GAME OVER!\n");
+				printf(">>> Tempo decorrido: %.0f segundos.\n",get_time(time));
+				isEndPlay = 1;
 			}
 			else if(inGame == SEGUROS){
-				printf("Tempo decorrido: %.0f segundos.\n",get_time(time));
-				printf("Parabéns, Você Ganhou!\n");
-				buffer = 1;
+				clear_screen();
+				print_board(ROW, COL, pt_board);
+				printf(">>> Parabéns, Você Ganhou!\n");
+				printf(">>> Tempo decorrido: %.0f segundos.\n",get_time(time));
+				isEndPlay = 1;
 			}
-			printf("\n---------------------------------------------------\n");
-			print_board(ROW, COL, pt_board);
-			if(buffer==1){
+			if(isEndPlay==1){
 				do{
-					printf("\nDeseja retornar ao menu? 0 - sim / 1 - nao\n");
+					printf("\n>>> Deseja retornar ao menu? 0 - sim / 1 - nao\n");
 					scanf("%d",end);                             
 				} while(*end != 1 && *end != 0);
 			}
 		}
 		else if((r == -2) && (c == -2)){
-			printf("\nDeseja Retornar ao Menu?\n0 - Sim\n1 - Não\n\n");
-			int i;
-			scanf("%d",&i);
-			if(!i){
+			do{
+				printf("\n>>> Deseja retornar ao menu? 0 - sim / 1 - nao\n");
+				scanf("%d",end);                             
+			} while(*end != 1 && *end != 0);
+			inGame = -1;
+		}
+		else if((r == -3) && (c == -3)){
+			if (*avaliableT==1){
 				clear_screen();
-				index = 0;
-				print_menu();
+				print_board(ROW, COL, pt_board);
+				printf("\n>>> Tempo decorrido: %.0f segundos.\n",get_time(time));
 			}
-			else{
-				printf("\nInsira uma coodenada abaixo de de x = [1,%d] e y = [1,%d]\nDigite Coordenadas \"-1 -1\" para voltar ao menu\n\"-2 -2\" para ver o tempo de jogo\n\"-3 -3\" para receber ajuda\n",ROW,COL);
+			else {
+				clear_screen();
+				print_board(ROW, COL, pt_board);
+				printf("\n>>> Jogo ainda nao iniciado\n");
 			}
 		}
-		else if((r == -3) && (c == -3) && avaliableT){
-			if (*avaliableT){printf("\nTempo decorrido: %.0f segundos.\n",get_time(time));}
-		}
-		else if((r == -4) && (c == -4) && avaliableH){
-			cont = help(&rHelp,&cHelp,pt_board,&lixo,lixomaior);
-			if(!cont){
-				printf("\nTente uma casa ao redor das Coordenadas x = \"%d\" e y = \"%d\"\n\n",(rHelp+1),(cHelp+1));
+		else if((r == -4) && (c == -4)){
+			if (avaliableH==1){
+				clear_screen();
+				print_board(ROW, COL, pt_board);
+				cont = help(&rHelp,&cHelp,pt_board,&lixo,lixomaior);
+				if(!cont){
+					printf("\n>>> Tente uma casa ao redor das Coordenadas x = \"%d\" e y = \"%d\"\n",(rHelp+1),(cHelp+1));
+				}
+				else{
+					printf("\n>>> Tente uma casa aleatória longe das abertas\n");
+				}
+				cHelp = -1;
+				rHelp = -1;
 			}
-			else{
-				printf("Tente uma casa aleatória longe das abertas\n\n");
+			else {
+				clear_screen();
+				print_board(ROW, COL, pt_board);
+				printf("\n>>> Nao tenha medo de dar o primeiro passo! :)\n");
 			}
-			cHelp = -1;
-			rHelp = -1;
 		}
 		else{
-			printf("\nInsira uma Coordenada Válida\n");
+			printf("\n>>> Insira uma Coordenada Valida\n");
 		}
 	}
 	free(lixomaior);
@@ -348,7 +361,7 @@ void init_menu(houses * board, int avaliableT,time_t * time, int * end){
 	menu i = -1;
 	int bufferI;
 	do {
-		if (*end!=1){
+		if (*end==0){
 			clear_screen();
 			print_menu();	
 			scanf("%d",&bufferI);
@@ -359,15 +372,15 @@ void init_menu(houses * board, int avaliableT,time_t * time, int * end){
 			case START : 
 				board = init_board(ROW,COL,QTDBOMBS,board);
 				init_game(board, &avaliableT,time,end);
-				if (*end){i=2;}
 				break;
 			case BOT :
 				board = init_board(ROW,COL,QTDBOMBS,board);
 				init_bot(board, &avaliableT,time,end);
 				break;
 			case EXIT :
+				*end = 1;
+				clear_screen();
 				printf("\nVou sentir saudade :(\n");
-				*end=1;
 				break;
 			default :
 				printf("\nInsira uma Opcao valida!\n");
