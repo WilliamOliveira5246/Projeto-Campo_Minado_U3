@@ -271,7 +271,7 @@ void init_game(houses * pt_board, int * avaliableT, time_t * time, int * end){
 	float lixo;
 	int inGame = 0, r, c, rHelp = -1, cHelp = -1, avaliableH = 0, fim_while = 0,cont,* lixomaior = (int*) malloc(16*sizeof(int)),isEndPlay = 0;
 	while(inGame >= 0 && inGame != SEGUROS){
-		printf("\n>>> Insira uma coodenada igual ou entre de x = [1,%d] e y = [10,%d]\nDigite:\n\"-1 -1\" para encerrar o jogo\n\"-2 -2\" para ver o tempo de jogo\n\"-3 -3\" para receber ajuda\n",ROW,COL);
+		printf("\n>>> Insira uma coordenada igual ou entre de x = [1,%d] e y = [1,%d]\nDigite:\n\"-1 -1\" para encerrar o jogo\n\"-2 -2\" para ver o tempo de jogo\n\"-3 -3\" para receber ajuda\n",ROW,COL);
 		scanf("%d %d",&r,&c);
 		r--;
 		c--;
@@ -280,7 +280,6 @@ void init_game(houses * pt_board, int * avaliableT, time_t * time, int * end){
 			avaliableH = 1;
 			if(inGame > 0){
 				clear_screen();
-				//printf("\n>>> Insira uma coodenada abaixo de de x = [1,%d] e y = [10,%d]\nDigite:\n\"-1 -1\" para encerrar o jogo\n\"-2 -2\" para ver o tempo de jogo\n\"-3 -3\" para receber ajuda\n",ROW,COL);
 				print_board(ROW, COL, pt_board);
 			}
 			else if(inGame == -1){
