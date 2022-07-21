@@ -256,13 +256,12 @@ void init_bot(houses * pt_board, FILE * save, int * avaliableT,time_t * time){
 		printf("\n---------------------------------------------------\n");
 		print_board(ROW, COL, pt_board);
 		if(buffer){
-			printf("\nDigite as coordenadas \"-1 -1\" para voltar ao menu\n");
-			while(r != -1 && c != -1){
-				scanf("%d %d",&rHelp,&cHelp);        
-				clear_screen();
-				print_menu();
-				return;                         
-			}            
+			while(!(r == -1 && c == -1)){
+				printf("\nDigite as coordenadas \"-1 -1\" para voltar ao menu\n");
+				scanf("%d %d",&r,&c);                                 
+			}
+			clear_screen();
+			print_menu();            
 		}
 	}
 }
@@ -298,15 +297,13 @@ void init_game(houses * pt_board, FILE * save, int * avaliableT, time_t * time){
 			printf("\n---------------------------------------------------\n");
 			print_board(ROW, COL, pt_board);
 			if(buffer){
-				printf("\nDigite as coordenadas \"-1 -1\" para voltar ao menu\n");
-				while(r != -1 && c != -1){
-					scanf("%d %d",&rHelp,&cHelp);        
-					clear_screen();
-					print_menu();
-					return;                         
-				}            
+				while(!(r == -1 && c == -1)){
+					printf("\nDigite as coordenadas \"-1 -1\" para voltar ao menu\n");
+					scanf("%d %d",&r,&c);                                 
+				}
+				clear_screen();
+				print_menu();            
 			}
-
 		}
 		else if((r == -2) && (c == -2)){
 			printf("\nDeseja Retornar ao Menu?\n0 - Sim\n1 - Não\n\n");
