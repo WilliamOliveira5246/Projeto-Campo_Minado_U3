@@ -54,8 +54,8 @@ void setNumbers(int ROW, int COL, houses * pt_board){
 	}
 }
 
-houses * init_board(int ROW, int COL, int QTDBOMBS, houses * board){
-	board = (houses*) malloc(ROW*COL*sizeof(houses));
+houses * init_board(int ROW, int COL, int QTDBOMBS){
+	houses * board = (houses*) malloc(ROW*COL*sizeof(houses));
 	for(int i = 0; i < ROW;i++){
 		for(int j = 0; j < COL;j++){
 			board[i*COL+j].face[0] = FNOTREV;
@@ -369,11 +369,11 @@ void init_menu(houses * board, int avaliableT,time_t * time, int * end){
 		else {i=2;}
 		switch(i){
 			case START : 
-				board = init_board(ROW,COL,QTDBOMBS,board);
+				board = init_board(ROW,COL,QTDBOMBS);
 				init_game(board, &avaliableT,time,end);
 				break;
 			case BOT :
-				board = init_board(ROW,COL,QTDBOMBS,board);
+				board = init_board(ROW,COL,QTDBOMBS);
 				init_bot(board, &avaliableT,time,end);
 				break;
 			case EXIT :

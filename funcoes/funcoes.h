@@ -13,7 +13,7 @@ void setBombs(int ROW, int COL, int QTDBOMBS, houses * pt_board);
 
 void setNumbers(int ROW, int COL, houses * pt_board);
 
-houses * init_board(int ROW, int COL, int QTDBOMBS, houses * board);
+houses * init_board(int ROW, int COL, int QTDBOMBS);
 
 void print_board(int ROW, int COL, houses * board);
 
