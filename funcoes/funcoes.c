@@ -21,9 +21,9 @@ double get_time(time_t * t){return time(NULL) - *t;}
 
 void setBombs(int ROW, int COL, int QTDBOMBS, houses * pt_board){
 	for (int b = 0; b < QTDBOMBS; b++){
-		int slot = rand() % (ROW*COL);
-		if (pt_board[slot].face[1] != FBOMB){
-			pt_board[slot].face[1] = FBOMB;
+		int pos = rand() % (ROW*COL);
+		if (pt_board[pos].face[1] != FBOMB){
+			pt_board[pos].face[1] = FBOMB;
 		}
 		else b--;
 	}         
@@ -36,7 +36,7 @@ void setNumbers(int ROW, int COL, houses * pt_board){
 				int count = 0;
 				for(int x = -1; x < 2; x++){
 					for(int y = -1; y < 2; y++){
-						if((i-x) < ROW && (i-x) >= 0 && (j-y) < COL && (j-y)  >= 0){
+						if((i-x) < ROW && (i-x) >= 0 && (j-y) < COL && (j-y) >= 0){
 							if(pt_board[(i-x)*COL+(j-y)].face[1] == FBOMB){
 								count++;
 							}
@@ -146,25 +146,25 @@ float calc_prob(int r, int c, houses * board, float * total, int * mat){
 }
 
 int help(int * r,int * c, houses * board,float * total, int * mat){
-	int index = 0, buffer, cont = 0,* m;
+	int isEndLoop = 0, pos, cont = 0,* m;
 	float  count = 0;
 	m = (int*) malloc(16*sizeof(int));
-	houses * pos;
-	for(int x = 0; x < ROW && index == 0;x++){
-		for(int y = 0; y < COL && index == 0;y++){
-			buffer = x*COL+y;
-			if(board[buffer].status == 1 && board[buffer].face[1] != FNULL){
-				pos = &(board[buffer]);
+	houses * house;
+	for(int x = 0; x < ROW && isEndLoop == 0;x++){
+		for(int y = 0; y < COL && isEndLoop == 0;y++){
+			pos = x*COL+y;
+			if(board[pos].status == 1 && board[pos].face[1] != FNULL){
+				house = &(board[pos]);
 				*r = x, *c = y;
-				index = 1;                
+				isEndLoop = 1;                
 			}
 		}
 	}
 	float probM = calc_prob(*r,*c,board,total,mat),probA;
 	for(int x = 0; x < ROW;x++){
 		for(int y = 0; y < COL;y++){
-			buffer = x*COL+y;
-			if(board[buffer].status == 1 && board[buffer].face[1] != FNULL){
+			pos = x*COL+y;
+			if(board[pos].status == 1 && board[pos].face[1] != FNULL){
 				probA = calc_prob(x,y,board,&count,m);
 				if(probA > probM){ 
 					for(int i = 0; i < count;i++){                        
@@ -173,7 +173,7 @@ int help(int * r,int * c, houses * board,float * total, int * mat){
 					}   
 					*total = count;            
 					probM = probA;
-					pos = &(board[buffer]);
+					house = &(board[pos]);
 					*r = x, *c = y;
 				}
 			}        
@@ -193,7 +193,6 @@ void init_bot(houses * pt_board, int * avaliableT,time_t * time, int * end){
 		if (inGame==0){
 			r = rand() % ROW;
 			c = rand() % COL;
-			*avaliableT = 1;
 			clear_screen();
 			printf("%d - Escolhendo coordenada (%d,%d)\n",(round+1),(r+1),(c+1));
 			inGame = reveal(ROW,COL,r,c,pt_board,inGame,avaliableT,time);
@@ -214,7 +213,7 @@ void init_bot(houses * pt_board, int * avaliableT,time_t * time, int * end){
 							for(int i = -1; i < 2;i++){
 								for(int j = -1; j < 2;j++){
 									rNew = x - i, cNew = y - j;
-									if((rNew) < ROW && (rNew) >= 0 && (cNew) < COL && (cNew)  >= 0){
+									if((rNew) < ROW && (rNew) >= 0 && (cNew) < COL && (cNew) >= 0){
 										if(pt_board[rNew*COL+cNew].status == 1){
 											index = 0;
 										}
@@ -269,7 +268,7 @@ void init_game(houses * pt_board, int * avaliableT, time_t * time, int * end){
 	*avaliableT = 0;
 	print_board(ROW, COL, pt_board);
 	float lixo;
-	int inGame = 0, r, c, rHelp = -1, cHelp = -1, avaliableH = 0, fim_while = 0,cont,* lixomaior = (int*) malloc(16*sizeof(int)),isEndPlay = 0;
+	int inGame = 0, r, c, rHelp = -1, cHelp = -1, avaliableH = 0,cont,* lixomaior = (int*) malloc(16*sizeof(int)),isEndPlay = 0;
 	while(inGame >= 0 && inGame != SEGUROS){
 		printf("\n>>> Insira uma coordenada igual ou entre de x = [1,%d] e y = [1,%d]\nDigite:\n\"-1 -1\" para encerrar o jogo\n\"-2 -2\" para ver o tempo de jogo\n\"-3 -3\" para receber ajuda\n",ROW,COL);
 		scanf("%d %d",&r,&c);
@@ -331,7 +330,7 @@ void init_game(houses * pt_board, int * avaliableT, time_t * time, int * end){
 					printf("\n>>> Tente uma casa ao redor das Coordenadas x = \"%d\" e y = \"%d\"\n",(rHelp+1),(cHelp+1));
 				}
 				else{
-					printf("\n>>> Tente uma casa aleatória longe das abertas\n");
+					printf("\n>>> Tente uma casa aleatoria longe das abertas\n");
 				}
 				cHelp = -1;
 				rHelp = -1;
