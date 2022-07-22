@@ -2,7 +2,7 @@
 #define ESTRUTURAS_H_
 
 typedef struct {
-     char face[3];
+     char face[2];
      int status;
  }houses;
 

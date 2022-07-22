@@ -3,6 +3,5 @@
 
 extern const char FBOMB, FNOTREV, FNULL ;
 extern const int ROW , COL, QTDBOMBS, SEGUROS;
-extern const double CLOCKS;
 
 #endif
